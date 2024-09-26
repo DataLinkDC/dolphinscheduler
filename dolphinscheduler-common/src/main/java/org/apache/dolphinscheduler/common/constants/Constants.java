@@ -35,14 +35,15 @@ public final class Constants {
      */
     public static final String COMMON_PROPERTIES_PATH = "/common.properties";
 
+    public static final String REMOTE_LOGGING_YAML_PATH = "/remote-logging.yaml";
+    public static final String AWS_YAML_PATH = "/aws.yaml";
+
     public static final String FORMAT_SS = "%s%s";
     public static final String FORMAT_S_S = "%s/%s";
     public static final String FORMAT_S_S_COLON = "%s:%s";
     public static final String FOLDER_SEPARATOR = "/";
 
     public static final String RESOURCE_TYPE_FILE = "resources";
-
-    public static final String RESOURCE_TYPE_UDF = "udfs";
 
     public static final String EMPTY_STRING = "";
 
@@ -55,28 +56,6 @@ public final class Constants {
      * hdfs defaultFS property name. Should be consistent with the property name in hdfs-site.xml
      */
     public static final String HDFS_DEFAULT_FS = "fs.defaultFS";
-
-    /**
-     * hadoop configuration
-     */
-    public static final String HADOOP_RM_STATE_ACTIVE = "ACTIVE";
-
-    public static final String HADOOP_RESOURCE_MANAGER_HTTPADDRESS_PORT = "resource.manager.httpaddress.port";
-
-    /**
-     * yarn.resourcemanager.ha.rm.ids
-     */
-    public static final String YARN_RESOURCEMANAGER_HA_RM_IDS = "yarn.resourcemanager.ha.rm.ids";
-
-    /**
-     * yarn.application.status.address
-     */
-    public static final String YARN_APPLICATION_STATUS_ADDRESS = "yarn.application.status.address";
-
-    /**
-     * yarn.job.history.status.address
-     */
-    public static final String YARN_JOB_HISTORY_STATUS_ADDRESS = "yarn.job.history.status.address";
 
     /**
      * hdfs configuration
@@ -128,8 +107,7 @@ public final class Constants {
      */
     public static final String RESOURCE_STORAGE_TYPE = "resource.storage.type";
 
-    public static final String AWS_S3_BUCKET_NAME = "resource.aws.s3.bucket.name";
-    public static final String AWS_END_POINT = "resource.aws.s3.endpoint";
+    public static final String AWS_S3_BUCKET_NAME = "aws.s3.bucket.name";
 
     public static final String ALIBABA_CLOUD_OSS_BUCKET_NAME = "resource.alibaba.cloud.oss.bucket.name";
     public static final String ALIBABA_CLOUD_OSS_END_POINT = "resource.alibaba.cloud.oss.endpoint";
@@ -243,11 +221,6 @@ public final class Constants {
     public static final String HTTP_X_REAL_IP = "X-Real-IP";
 
     /**
-     * UTF-8
-     */
-    public static final String UTF_8 = "UTF-8";
-
-    /**
      * user name regex
      */
     public static final Pattern REGEX_USER_NAME = Pattern.compile("^[a-zA-Z0-9._-]{3,39}$");
@@ -296,8 +269,6 @@ public final class Constants {
      * normal running task
      */
     public static final String FLOWNODE_RUN_FLAG_NORMAL = "NORMAL";
-
-    public static final String COMMON_TASK_TYPE = "common";
 
     public static final String DEFAULT = "default";
     public static final String PASSWORD = "password";
@@ -395,8 +366,6 @@ public final class Constants {
     public static final String QUEUE_NAME = "queueName";
     public static final int LOG_QUERY_SKIP_LINE_NUMBER = 0;
     public static final int LOG_QUERY_LIMIT = 4096;
-    public static final String ALIAS = "alias";
-    public static final String CONTENT = "content";
     public static final String DEPENDENT_SPLIT = ":||";
     public static final long DEPENDENT_ALL_TASK_CODE = -1;
     public static final long DEPENDENT_WORKFLOW_CODE = 0;
@@ -535,14 +504,11 @@ public final class Constants {
      * session timeout
      */
     public static final int SESSION_TIME_OUT = 7200;
+
     public static final int MAX_FILE_SIZE = 1024 * 1024 * 1024;
-    public static final String UDF = "UDF";
+
     public static final String CLASS = "class";
 
-    /**
-     * default worker group
-     */
-    public static final String DEFAULT_WORKER_GROUP = "default";
     /**
      * authorize writable perm
      */
@@ -683,9 +649,6 @@ public final class Constants {
     public static final Integer QUERY_ALL_ON_WORKFLOW = 2;
     public static final Integer QUERY_ALL_ON_TASK = 3;
 
-    /**
-     * remote logging
-     */
     public static final String REMOTE_LOGGING_ENABLE = "remote.logging.enable";
 
     public static final String REMOTE_LOGGING_TARGET = "remote.logging.target";
@@ -705,18 +668,7 @@ public final class Constants {
 
     public static final String REMOTE_LOGGING_OSS_ENDPOINT = "remote.logging.oss.endpoint";
 
-    /**
-     * remote logging for S3
-     */
-    public static final String REMOTE_LOGGING_S3_ACCESS_KEY_ID = "remote.logging.s3.access.key.id";
-
-    public static final String REMOTE_LOGGING_S3_ACCESS_KEY_SECRET = "remote.logging.s3.access.key.secret";
-
     public static final String REMOTE_LOGGING_S3_BUCKET_NAME = "remote.logging.s3.bucket.name";
-
-    public static final String REMOTE_LOGGING_S3_ENDPOINT = "remote.logging.s3.endpoint";
-
-    public static final String REMOTE_LOGGING_S3_REGION = "remote.logging.s3.region";
 
     /**
      * remote logging for GCS
@@ -724,6 +676,13 @@ public final class Constants {
     public static final String REMOTE_LOGGING_GCS_CREDENTIAL = "remote.logging.google.cloud.storage.credential";
 
     public static final String REMOTE_LOGGING_GCS_BUCKET_NAME = "remote.logging.google.cloud.storage.bucket.name";
+
+    /**
+     * remote logging for ABS
+     */
+    public static final String REMOTE_LOGGING_ABS_ACCOUNT_NAME = "remote.logging.abs.account.name";
+    public static final String REMOTE_LOGGING_ABS_ACCOUNT_KEY = "remote.logging.abs.account.key";
+    public static final String REMOTE_LOGGING_ABS_CONTAINER_NAME = "remote.logging.abs.container.name";
 
     /**
      * data quality
@@ -735,4 +694,8 @@ public final class Constants {
      * K8S sensitive param
      */
     public static final String K8S_CONFIG_REGEX = "(?<=((?i)configYaml(\" : \"))).*?(?=(\",\\n))";
+
+    public static final String RELEASE_STATE = "releaseState";
+    public static final String EXECUTE_TYPE = "executeType";
+
 }

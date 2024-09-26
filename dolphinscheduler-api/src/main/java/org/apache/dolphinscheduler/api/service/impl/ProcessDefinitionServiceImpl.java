@@ -34,13 +34,12 @@ import static org.apache.dolphinscheduler.api.enums.Status.PROCESS_DEFINE_NOT_EX
 import static org.apache.dolphinscheduler.common.constants.CommandKeyConstants.CMD_PARAM_SUB_PROCESS_DEFINE_CODE;
 import static org.apache.dolphinscheduler.common.constants.Constants.COPY_SUFFIX;
 import static org.apache.dolphinscheduler.common.constants.Constants.DATA_LIST;
-import static org.apache.dolphinscheduler.common.constants.Constants.DEFAULT_WORKER_GROUP;
 import static org.apache.dolphinscheduler.common.constants.Constants.GLOBAL_PARAMS;
 import static org.apache.dolphinscheduler.common.constants.Constants.IMPORT_SUFFIX;
 import static org.apache.dolphinscheduler.common.constants.Constants.LOCAL_PARAMS;
 import static org.apache.dolphinscheduler.plugin.task.api.TaskConstants.LOCAL_PARAMS_LIST;
 import static org.apache.dolphinscheduler.plugin.task.api.TaskConstants.TASK_TYPE;
-import static org.apache.dolphinscheduler.plugin.task.api.TaskConstants.TASK_TYPE_SQL;
+import static org.apache.dolphinscheduler.plugin.task.api.TaskPluginManager.checkTaskParameters;
 
 import org.apache.dolphinscheduler.api.dto.DagDataSchedule;
 import org.apache.dolphinscheduler.api.dto.treeview.Instance;
@@ -109,12 +108,13 @@ import org.apache.dolphinscheduler.dao.model.PageListingResult;
 import org.apache.dolphinscheduler.dao.repository.ProcessDefinitionDao;
 import org.apache.dolphinscheduler.dao.repository.ProcessDefinitionLogDao;
 import org.apache.dolphinscheduler.dao.repository.TaskDefinitionLogDao;
-import org.apache.dolphinscheduler.plugin.task.api.TaskPluginManager;
+import org.apache.dolphinscheduler.dao.utils.WorkerGroupUtils;
 import org.apache.dolphinscheduler.plugin.task.api.enums.SqlType;
 import org.apache.dolphinscheduler.plugin.task.api.enums.TaskTimeoutStrategy;
 import org.apache.dolphinscheduler.plugin.task.api.model.Property;
-import org.apache.dolphinscheduler.plugin.task.api.parameters.ParametersNode;
 import org.apache.dolphinscheduler.plugin.task.api.parameters.SqlParameters;
+import org.apache.dolphinscheduler.plugin.task.api.utils.TaskTypeUtils;
+import org.apache.dolphinscheduler.plugin.task.sql.SqlTaskChannelFactory;
 import org.apache.dolphinscheduler.service.alert.ListenerEventAlertManager;
 import org.apache.dolphinscheduler.service.model.TaskNode;
 import org.apache.dolphinscheduler.service.process.ProcessService;
@@ -239,9 +239,6 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
     private DataSourceMapper dataSourceMapper;
 
     @Autowired
-    private TaskPluginManager taskPluginManager;
-
-    @Autowired
     private WorkFlowLineageService workFlowLineageService;
 
     @Autowired
@@ -299,7 +296,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         List<TaskDefinitionLog> taskDefinitionLogs = generateTaskDefinitionList(taskDefinitionJson);
         List<ProcessTaskRelationLog> taskRelationList = generateTaskRelationList(taskRelationJson, taskDefinitionLogs);
 
-        long processDefinitionCode = CodeGenerateUtils.getInstance().genCode();
+        long processDefinitionCode = CodeGenerateUtils.genCode();
         ProcessDefinition processDefinition =
                 new ProcessDefinition(projectCode, name, processDefinitionCode, description,
                         globalParams, locations, timeout, loginUser.getId());
@@ -360,7 +357,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 
         long processDefinitionCode;
         try {
-            processDefinitionCode = CodeGenerateUtils.getInstance().genCode();
+            processDefinitionCode = CodeGenerateUtils.genCode();
         } catch (CodeGenerateException e) {
             throw new ServiceException(Status.INTERNAL_SERVER_ERROR_ARGS);
         }
@@ -424,11 +421,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                 throw new ServiceException(Status.DATA_IS_NOT_VALID, taskDefinitionJson);
             }
             for (TaskDefinitionLog taskDefinitionLog : taskDefinitionLogs) {
-                if (!taskPluginManager.checkTaskParameters(ParametersNode.builder()
-                        .taskType(taskDefinitionLog.getTaskType())
-                        .taskParams(taskDefinitionLog.getTaskParams())
-                        .dependence(taskDefinitionLog.getDependence())
-                        .build())) {
+                if (!checkTaskParameters(taskDefinitionLog.getTaskType(), taskDefinitionLog.getTaskParams())) {
                     log.error(
                             "Generate task definition list failed, the given task definition parameter is invalided, taskName: {}, taskDefinition: {}",
                             taskDefinitionLog.getName(), taskDefinitionLog);
@@ -1233,7 +1226,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             // build process definition
             processDefinition = new ProcessDefinition(projectCode,
                     processDefinitionName,
-                    CodeGenerateUtils.getInstance().genCode(),
+                    CodeGenerateUtils.genCode(),
                     "",
                     "[]", null,
                     0, loginUser.getId());
@@ -1388,12 +1381,12 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         sqlParameters.setSqlType(SqlType.NON_QUERY.ordinal());
         sqlParameters.setLocalParams(Collections.emptyList());
         taskDefinition.setTaskParams(JSONUtils.toJsonString(sqlParameters));
-        taskDefinition.setCode(CodeGenerateUtils.getInstance().genCode());
-        taskDefinition.setTaskType(TASK_TYPE_SQL);
+        taskDefinition.setCode(CodeGenerateUtils.genCode());
+        taskDefinition.setTaskType(SqlTaskChannelFactory.NAME);
         taskDefinition.setFailRetryTimes(0);
         taskDefinition.setFailRetryInterval(0);
         taskDefinition.setTimeoutFlag(TimeoutFlag.CLOSE);
-        taskDefinition.setWorkerGroup(DEFAULT_WORKER_GROUP);
+        taskDefinition.setWorkerGroup(WorkerGroupUtils.getDefaultWorkerGroup());
         taskDefinition.setTaskPriority(Priority.MEDIUM);
         taskDefinition.setEnvironmentCode(-1);
         taskDefinition.setTimeout(0);
@@ -1433,7 +1426,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         processDefinition.setProjectCode(projectCode);
         processDefinition.setUserId(loginUser.getId());
         try {
-            processDefinition.setCode(CodeGenerateUtils.getInstance().genCode());
+            processDefinition.setCode(CodeGenerateUtils.genCode());
         } catch (CodeGenerateException e) {
             log.error(
                     "Save process definition error because generate process definition code error, projectCode:{}.",
@@ -1456,7 +1449,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             taskDefinitionLog.setOperator(loginUser.getId());
             taskDefinitionLog.setOperateTime(now);
             try {
-                long code = CodeGenerateUtils.getInstance().genCode();
+                long code = CodeGenerateUtils.genCode();
                 taskCodeMap.put(taskDefinitionLog.getCode(), code);
                 taskDefinitionLog.setCode(code);
             } catch (CodeGenerateException e) {
@@ -1537,6 +1530,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             }
         }
 
+        result.put(Constants.DATA_LIST, processDefinition);
         log.info("Import process definition complete, projectCode:{}, processDefinitionCode:{}.", projectCode,
                 processDefinition.getCode());
         return true;
@@ -1617,13 +1611,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 
             // check whether the process definition json is normal
             for (TaskNode taskNode : taskNodes) {
-                if (!taskPluginManager.checkTaskParameters(ParametersNode.builder()
-                        .taskType(taskNode.getType())
-                        .taskParams(taskNode.getTaskParams())
-                        .dependence(taskNode.getDependence())
-                        .switchResult(taskNode.getSwitchResult())
-                        .build())) {
-                    log.error("Task node {} parameter invalid.", taskNode.getName());
+                if (!checkTaskParameters(taskNode.getType(), taskNode.getParams())) {
                     putMsg(result, Status.PROCESS_NODE_S_PARAMETER_INVALID, taskNode.getName());
                     return result;
                 }
@@ -1893,7 +1881,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 
                         long subProcessCode = 0L;
                         // if process is sub process, the return sub id, or sub id=0
-                        if (taskInstance.isSubProcess()) {
+                        if (TaskTypeUtils.isSubWorkflowTask(taskInstance.getTaskType())) {
                             TaskDefinition taskDefinition = taskDefinitionMap.get(taskInstance.getTaskCode());
                             subProcessCode = Long.parseLong(JSONUtils.parseObject(
                                     taskDefinition.getTaskParams()).path(CMD_PARAM_SUB_PROCESS_DEFINE_CODE).asText());
@@ -2073,7 +2061,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                 Map<Long, Long> taskCodeMap = new HashMap<>();
                 for (TaskDefinitionLog taskDefinitionLog : taskDefinitionLogs) {
                     try {
-                        long taskCode = CodeGenerateUtils.getInstance().genCode();
+                        long taskCode = CodeGenerateUtils.genCode();
                         taskCodeMap.put(taskDefinitionLog.getCode(), taskCode);
                         taskDefinitionLog.setCode(taskCode);
                     } catch (CodeGenerateException e) {
@@ -2096,7 +2084,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                 }
                 final long oldProcessDefinitionCode = processDefinition.getCode();
                 try {
-                    processDefinition.setCode(CodeGenerateUtils.getInstance().genCode());
+                    processDefinition.setCode(CodeGenerateUtils.genCode());
                 } catch (CodeGenerateException e) {
                     log.error("Generate process definition code error, projectCode:{}.", targetProjectCode, e);
                     putMsg(result, Status.INTERNAL_SERVER_ERROR_ARGS);

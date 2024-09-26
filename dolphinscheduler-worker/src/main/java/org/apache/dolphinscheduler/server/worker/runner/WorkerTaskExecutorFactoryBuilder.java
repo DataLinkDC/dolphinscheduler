@@ -17,9 +17,8 @@
 
 package org.apache.dolphinscheduler.server.worker.runner;
 
-import org.apache.dolphinscheduler.plugin.storage.api.StorageOperate;
+import org.apache.dolphinscheduler.plugin.storage.api.StorageOperator;
 import org.apache.dolphinscheduler.plugin.task.api.TaskExecutionContext;
-import org.apache.dolphinscheduler.plugin.task.api.TaskPluginManager;
 import org.apache.dolphinscheduler.server.worker.config.WorkerConfig;
 import org.apache.dolphinscheduler.server.worker.registry.WorkerRegistryClient;
 import org.apache.dolphinscheduler.server.worker.rpc.WorkerMessageSender;
@@ -36,14 +35,8 @@ public class WorkerTaskExecutorFactoryBuilder {
     @Autowired
     private WorkerMessageSender workerMessageSender;
 
-    @Autowired
-    private TaskPluginManager taskPluginManager;
-
-    @Autowired
-    private WorkerTaskExecutorThreadPool workerManager;
-
     @Autowired(required = false)
-    private StorageOperate storageOperate;
+    private StorageOperator storageOperator;
 
     @Autowired
     private WorkerRegistryClient workerRegistryClient;
@@ -51,15 +44,12 @@ public class WorkerTaskExecutorFactoryBuilder {
     public WorkerTaskExecutorFactoryBuilder(
                                             WorkerConfig workerConfig,
                                             WorkerMessageSender workerMessageSender,
-                                            TaskPluginManager taskPluginManager,
                                             WorkerTaskExecutorThreadPool workerManager,
-                                            StorageOperate storageOperate,
+                                            StorageOperator storageOperator,
                                             WorkerRegistryClient workerRegistryClient) {
         this.workerConfig = workerConfig;
         this.workerMessageSender = workerMessageSender;
-        this.taskPluginManager = taskPluginManager;
-        this.workerManager = workerManager;
-        this.storageOperate = storageOperate;
+        this.storageOperator = storageOperator;
         this.workerRegistryClient = workerRegistryClient;
     }
 
@@ -67,8 +57,7 @@ public class WorkerTaskExecutorFactoryBuilder {
         return new DefaultWorkerTaskExecutorFactory(taskExecutionContext,
                 workerConfig,
                 workerMessageSender,
-                taskPluginManager,
-                storageOperate,
+                storageOperator,
                 workerRegistryClient);
     }
 

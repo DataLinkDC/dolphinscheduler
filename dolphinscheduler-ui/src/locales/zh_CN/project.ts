@@ -246,7 +246,8 @@ export default {
     delete_task_validate_dependent_tasks_desc:
       '下游存在依赖，你不能删除该任务.',
     warning_delete_scheduler_dependent_tasks_desc:
-      '下游存在依赖, 删除定时可能会对下游任务产生影响. 你确定要删除该定时嘛?'
+      '下游存在依赖, 删除定时可能会对下游任务产生影响. 你确定要删除该定时嘛?',
+    warning_too_large_parallelism_number: '并行度设置太大了, 最好不要超过10.'
   },
   task: {
     on_line: '线上',
@@ -437,6 +438,8 @@ export default {
     timeout_period_tips: '超时时长必须为正整数',
     script: '脚本',
     script_tips: '请输入脚本（必填）',
+    master: 'Master',
+    master_tips: '请输入master url（必填）',
     init_script: '初始化脚本',
     init_script_tips: '请输入初始化脚本',
     resources: '资源',
@@ -516,7 +519,6 @@ export default {
     body_not_contains: '内容不包含',
     http_parameters_position: '参数位置',
     target_task_name: '目标任务名',
-    target_task_name_tips: '请输入Pigeon任务名(必填)',
     datasource_type: '数据源类型',
     datasource_instances: '数据源实例',
     sql_type: 'SQL类型',
@@ -811,7 +813,6 @@ export default {
     integer_tips: '请输入一个正整数',
     sql_parameter: 'sql参数',
     format_tips: '请输入格式为',
-    udf_function: 'UDF函数',
     unlimited: '不限制',
     please_select_source_connector_type: '请选择源数据类型',
     please_select_source_datasource_id: '请选择源数据源',
@@ -897,10 +898,14 @@ export default {
     code: '参数编码',
     name: '参数名称',
     value: '参数值',
+    data_type: '参数类型',
+    create_user: '创建用户',
+    modify_user: '修改用户',
     create_time: '创建时间',
     update_time: '更新时间',
     name_tips: '请输入参数名称',
     value_tips: '请输入参数值',
+    data_type_tips: '请选择参数类型',
     operation: '操作',
     edit: '编辑',
     delete: '删除',

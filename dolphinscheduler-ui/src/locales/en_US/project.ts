@@ -249,7 +249,9 @@ export default {
     delete_task_validate_dependent_tasks_desc:
       'The downstream dependent tasks exists. You can not delete the task.',
     warning_delete_scheduler_dependent_tasks_desc:
-      'The downstream dependent tasks exists. Are you sure to delete the scheduler?'
+      'The downstream dependent tasks exists. Are you sure to delete the scheduler?',
+    warning_too_large_parallelism_number:
+      'The parallelism number is too large. It is better not to be over 10.'
   },
   task: {
     on_line: 'Online',
@@ -447,6 +449,8 @@ export default {
     timeout_period_tips: 'Timeout must be a positive integer',
     script: 'Script',
     script_tips: 'Please enter script(required)',
+    master: 'Master',
+    master_tips: 'Please enter master url(required)',
     init_script: 'Initialization script',
     init_script_tips: 'Please enter initialization script',
     resources: 'Resources',
@@ -529,7 +533,6 @@ export default {
     body_not_contains: 'Content does not contain',
     http_parameters_position: 'Http Parameters Position',
     target_task_name: 'Target Task Name',
-    target_task_name_tips: 'Please enter the Pigeon task name(required)',
     datasource_type: 'Datasource types',
     datasource_instances: 'Datasource instances',
     sql_type: 'SQL Type',
@@ -836,7 +839,6 @@ export default {
     integer_tips: 'Please enter a positive integer',
     sql_parameter: 'SQL Parameter',
     format_tips: 'Please enter format',
-    udf_function: 'UDF Function',
     unlimited: 'unlimited',
     please_select_source_connector_type: 'Please select source connector type',
     please_select_source_datasource_id: 'Please select source datasource id',
@@ -927,10 +929,14 @@ export default {
     code: 'Parameter Code',
     name: 'Parameter Name',
     value: 'Parameter Value',
+    data_type: 'Parameter Data Type',
+    create_user: 'Create User',
+    modify_user: 'Modify User',
     create_time: 'Create Time',
     update_time: 'Update Time',
     name_tips: 'Please enter your parameter name',
     value_tips: 'Please enter your parameter value',
+    data_type_tips: 'Please choose your parameter data type',
     operation: 'Operation',
     edit: 'Edit',
     delete: 'Delete',
